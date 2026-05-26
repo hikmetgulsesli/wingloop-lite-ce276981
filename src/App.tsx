@@ -208,8 +208,11 @@ export default function App() {
               <button onClick={() => store.actions.updateSettings({ sfx: !snapshot.settings.sfx })}>
                 SFX {snapshot.settings.sfx ? "ON" : "OFF"}
               </button>
-              <button onClick={() => store.actions.updateSettings({ assistMode: !snapshot.settings.assistMode })}>
-                PREFERENCES
+              <button
+                aria-pressed={snapshot.settings.assistMode}
+                onClick={() => store.actions.updateSettings({ assistMode: !snapshot.settings.assistMode })}
+              >
+                PREFERENCES {snapshot.settings.assistMode ? "ASSIST ON" : "ASSIST OFF"}
               </button>
               <button onClick={store.actions.resetSettings}>RESET DEFAULTS</button>
               <button onClick={() => { store.actions.resume(); setSettingsOpen(false); }}>RESUME GAME</button>
