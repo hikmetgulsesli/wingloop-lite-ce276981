@@ -30,7 +30,9 @@ const initialSnapshot = (bestScore = 0): WingLoopSnapshot => ({
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastTimeRef = useRef(0);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(() =>
+    typeof window === "undefined" ? false : window.location.pathname === "/settings",
+  );
   const store = useMemo(
     () => createWingLoopStore({ repo: createLocalWingLoopRepo(typeof window === "undefined" ? undefined : window.localStorage) }),
     [],
@@ -40,6 +42,27 @@ export default function App() {
   useEffect(() => store.subscribe(setSnapshot), [store]);
 
   useEffect(() => installWingLoopTestBridge(store), [store]);
+
+  useEffect(() => {
+    const handlePopState = () => setSettingsOpen(window.location.pathname === "/settings");
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const showSettings = useCallback(() => {
+    setSettingsOpen(true);
+    if (window.location.pathname !== "/settings") {
+      window.history.pushState({}, "", "/settings");
+    }
+  }, []);
+
+  const hideSettings = useCallback(() => {
+    setSettingsOpen(false);
+    if (window.location.pathname === "/settings") {
+      window.history.pushState({}, "", "/");
+    }
+  }, []);
 
   const draw = useCallback((ctx: CanvasRenderingContext2D, frame: WingLoopSnapshot) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, WINGLOOP_WORLD.height);
@@ -134,13 +157,17 @@ export default function App() {
         pauseOrResume();
       }
       if (event.code === "Escape") {
-        setSettingsOpen((open) => !open);
+        if (settingsOpen) {
+          hideSettings();
+        } else {
+          showSettings();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [flap, pauseOrResume]);
+  }, [flap, hideSettings, pauseOrResume, settingsOpen, showSettings]);
 
   return (
     <GameplayWingloopLite
@@ -149,12 +176,12 @@ export default function App() {
       settingsOpen={settingsOpen}
       canUseGameplayInput={canUseGameplayInput}
       actions={{
-        openSettings: () => setSettingsOpen(true),
+        openSettings: showSettings,
         primaryAction,
         pauseOrResume,
         restart: () => actRestartGame(store),
         flap,
-        closeSettings: () => setSettingsOpen(false),
+        closeSettings: hideSettings,
         updateSensitivity: (sensitivity) => store.actions.updateSettings({ sensitivity }),
         toggleMusic: () => store.actions.updateSettings({ music: !snapshot.settings.music }),
         toggleSfx: () => store.actions.updateSettings({ sfx: !snapshot.settings.sfx }),
@@ -162,11 +189,11 @@ export default function App() {
         resetDefaults: store.actions.resetSettings,
         resumeGame: () => {
           store.actions.resume();
-          setSettingsOpen(false);
+          hideSettings();
         },
         abandonRun: () => {
           store.actions.abandon();
-          setSettingsOpen(false);
+          hideSettings();
         },
       }}
     />
