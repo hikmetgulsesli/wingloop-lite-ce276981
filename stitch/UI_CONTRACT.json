@@ -1,0 +1,145 @@
+[
+  {
+    "screenId": "a7a78edd26824007a76c6fe218f4d5fd",
+    "screenTitle": "Gameplay - WingLoop Lite",
+    "deviceType": "DESKTOP",
+    "elements": [
+      {
+        "type": "button",
+        "label": "Settings",
+        "line": 155
+      },
+      {
+        "type": "button",
+        "label": "Resume Flight",
+        "line": 174
+      },
+      {
+        "type": "button",
+        "label": "Restart Loop",
+        "line": 181
+      },
+      {
+        "type": "button",
+        "label": "Abandon Run",
+        "line": 186
+      }
+    ],
+    "navigation": [],
+    "buttons": [
+      {
+        "type": "button",
+        "label": "Settings",
+        "line": 155
+      },
+      {
+        "type": "button",
+        "label": "Resume Flight",
+        "line": 174
+      },
+      {
+        "type": "button",
+        "label": "Restart Loop",
+        "line": 181
+      },
+      {
+        "type": "button",
+        "label": "Abandon Run",
+        "line": 186
+      }
+    ],
+    "inputs": [],
+    "hardcodedData": [],
+    "totalInteractive": 4,
+    "requiresRouter": false,
+    "requiresDragDrop": false
+  },
+  {
+    "screenId": "bebc9f7f30cd4b5aa6f97e5ba253bac4",
+    "screenTitle": "Game Settings - WingLoop Lite",
+    "deviceType": "DESKTOP",
+    "elements": [
+      {
+        "type": "button",
+        "label": "Close settings",
+        "line": 227
+      },
+      {
+        "type": "button",
+        "label": "MUSIC ON",
+        "line": 288
+      },
+      {
+        "type": "button",
+        "label": "SFX ON",
+        "line": 292
+      },
+      {
+        "type": "button",
+        "label": "PREFERENCES",
+        "line": 301
+      },
+      {
+        "type": "button",
+        "label": "RESET DEFAULTS",
+        "line": 306
+      },
+      {
+        "type": "button",
+        "label": "RESUME GAME",
+        "line": 310
+      },
+      {
+        "type": "input",
+        "label": "range",
+        "inputType": "range",
+        "line": 246
+      }
+    ],
+    "navigation": [],
+    "buttons": [
+      {
+        "type": "button",
+        "label": "Close settings",
+        "line": 227
+      },
+      {
+        "type": "button",
+        "label": "MUSIC ON",
+        "line": 288
+      },
+      {
+        "type": "button",
+        "label": "SFX ON",
+        "line": 292
+      },
+      {
+        "type": "button",
+        "label": "PREFERENCES",
+        "line": 301
+      },
+      {
+        "type": "button",
+        "label": "RESET DEFAULTS",
+        "line": 306
+      },
+      {
+        "type": "button",
+        "label": "RESUME GAME",
+        "line": 310
+      }
+    ],
+    "inputs": [
+      {
+        "type": "input",
+        "label": "range",
+        "inputType": "range",
+        "line": 246
+      }
+    ],
+    "hardcodedData": [],
+    "totalInteractive": 7,
+    "requiresRouter": false,
+    "requiresDragDrop": false
+  }
+]
