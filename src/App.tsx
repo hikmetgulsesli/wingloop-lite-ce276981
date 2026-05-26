@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import GameplayWingloopLite from "./screens/GameplayWingloopLite";
+import { actPauseGame } from "./features/surf-gameplay/act_pause_game";
+import { actRestartGame } from "./features/surf-gameplay/act_restart_game";
+import { actStartGame } from "./features/surf-gameplay/act_start_game";
 import { createLocalWingLoopRepo } from "./features/wingloop-lite/wingloop-lite.repo";
 import { createWingLoopStore } from "./features/wingloop-lite/wingloop-lite.store";
 import { WINGLOOP_WORLD, type WingLoopSnapshot } from "./game/game-runtime";
@@ -26,7 +30,9 @@ const initialSnapshot = (bestScore = 0): WingLoopSnapshot => ({
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastTimeRef = useRef(0);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(() =>
+    typeof window === "undefined" ? false : window.location.pathname === "/settings",
+  );
   const store = useMemo(
     () => createWingLoopStore({ repo: createLocalWingLoopRepo(typeof window === "undefined" ? undefined : window.localStorage) }),
     [],
@@ -36,6 +42,27 @@ export default function App() {
   useEffect(() => store.subscribe(setSnapshot), [store]);
 
   useEffect(() => installWingLoopTestBridge(store), [store]);
+
+  useEffect(() => {
+    const handlePopState = () => setSettingsOpen(window.location.pathname === "/settings");
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const showSettings = useCallback(() => {
+    setSettingsOpen(true);
+    if (window.location.pathname !== "/settings") {
+      window.history.pushState({}, "", "/settings");
+    }
+  }, []);
+
+  const hideSettings = useCallback(() => {
+    setSettingsOpen(false);
+    if (window.location.pathname === "/settings") {
+      window.history.pushState({}, "", "/");
+    }
+  }, []);
 
   const draw = useCallback((ctx: CanvasRenderingContext2D, frame: WingLoopSnapshot) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, WINGLOOP_WORLD.height);
@@ -113,14 +140,12 @@ export default function App() {
   }, [canUseGameplayInput, store]);
   const primaryAction = useCallback(() => {
     if (snapshot.phase === "ready") {
-      store.actions.start();
+      actStartGame(store);
       return;
     }
     flap();
   }, [flap, snapshot.phase, store]);
-  const pauseOrResume = useCallback(() => {
-    snapshot.phase === "paused" ? store.actions.resume() : store.actions.pause();
-  }, [snapshot.phase, store]);
+  const pauseOrResume = useCallback(() => actPauseGame(store), [store]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -132,92 +157,45 @@ export default function App() {
         pauseOrResume();
       }
       if (event.code === "Escape") {
-        setSettingsOpen((open) => !open);
+        if (settingsOpen) {
+          hideSettings();
+        } else {
+          showSettings();
+        }
       }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [flap, pauseOrResume]);
-
-  const statusText = snapshot.phase === "ready"
-    ? "Ready"
-    : snapshot.phase === "playing"
-      ? "Flying"
-      : snapshot.phase === "paused"
-        ? "Paused"
-        : snapshot.phase === "abandoned"
-          ? "Run Abandoned"
-          : "Game Over";
+  }, [flap, hideSettings, pauseOrResume, settingsOpen, showSettings]);
 
   return (
-    <main className="shell">
-      <section className="scorebar" aria-label="Game status">
-        <div>
-          <span className="eyebrow">WingLoop Lite</span>
-          <h1>{statusText}</h1>
-        </div>
-        <div className="scores">
-          <span>Score <strong>{snapshot.score}</strong></span>
-          <span>Best <strong>{snapshot.bestScore}</strong></span>
-          <span>Ramp <strong>{snapshot.difficulty.toFixed(1)}</strong></span>
-        </div>
-      </section>
-
-      <canvas
-        ref={canvasRef}
-        className="game"
-        width={WINGLOOP_WORLD.width}
-        height={WINGLOOP_WORLD.height}
-        aria-label="WingLoop Lite canvas game"
-        aria-disabled={!canUseGameplayInput}
-        onPointerDown={flap}
-      />
-
-      <section className="controls" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(132px, 1fr))" }} aria-label="Game controls">
-        <button onClick={() => setSettingsOpen(true)}>Settings</button>
-        <button onClick={primaryAction} disabled={snapshot.phase !== "ready" && !canUseGameplayInput}>
-          {snapshot.phase === "ready" ? "Start" : "Flap"}
-        </button>
-        <button onClick={pauseOrResume} disabled={snapshot.phase === "ready" || snapshot.phase === "gameover" || snapshot.phase === "abandoned"}>
-          {snapshot.phase === "paused" ? "Resume Flight" : "Pause"}
-        </button>
-        <button onClick={store.actions.restart}>Restart Loop</button>
-      </section>
-
-      {settingsOpen && (
-        <section className="settings-panel" aria-label="Game Settings - WingLoop Lite">
-          <div className="settings-card">
-            <button className="close-button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">Close settings</button>
-            <h2>Game Settings</h2>
-            <label>
-              Sensitivity
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={snapshot.settings.sensitivity}
-                onChange={(event) => store.actions.updateSettings({ sensitivity: Number(event.target.value) })}
-              />
-            </label>
-            <div className="settings-actions">
-              <button onClick={() => store.actions.updateSettings({ music: !snapshot.settings.music })}>
-                MUSIC {snapshot.settings.music ? "ON" : "OFF"}
-              </button>
-              <button onClick={() => store.actions.updateSettings({ sfx: !snapshot.settings.sfx })}>
-                SFX {snapshot.settings.sfx ? "ON" : "OFF"}
-              </button>
-              <button onClick={() => store.actions.updateSettings({ assistMode: !snapshot.settings.assistMode })}>
-                PREFERENCES
-              </button>
-              <button onClick={store.actions.resetSettings}>RESET DEFAULTS</button>
-              <button onClick={() => { store.actions.resume(); setSettingsOpen(false); }}>RESUME GAME</button>
-              <button onClick={() => { store.actions.abandon(); setSettingsOpen(false); }}>Abandon Run</button>
-            </div>
-          </div>
-        </section>
-      )}
-    </main>
+    <GameplayWingloopLite
+      canvasRef={canvasRef}
+      snapshot={snapshot}
+      settingsOpen={settingsOpen}
+      canUseGameplayInput={canUseGameplayInput}
+      actions={{
+        openSettings: showSettings,
+        primaryAction,
+        pauseOrResume,
+        restart: () => actRestartGame(store),
+        flap,
+        closeSettings: hideSettings,
+        updateSensitivity: (sensitivity) => store.actions.updateSettings({ sensitivity }),
+        toggleMusic: () => store.actions.updateSettings({ music: !snapshot.settings.music }),
+        toggleSfx: () => store.actions.updateSettings({ sfx: !snapshot.settings.sfx }),
+        togglePreferences: () => store.actions.updateSettings({ assistMode: !snapshot.settings.assistMode }),
+        resetDefaults: store.actions.resetSettings,
+        resumeGame: () => {
+          store.actions.resume();
+          hideSettings();
+        },
+        abandonRun: () => {
+          store.actions.abandon();
+          hideSettings();
+        },
+      }}
+    />
   );
 }
