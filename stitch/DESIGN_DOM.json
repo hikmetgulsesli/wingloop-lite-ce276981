@@ -1,0 +1,563 @@
+{
+  "generatedAt": "2026-05-26T17:05:26.688Z",
+  "screenCount": 2,
+  "screens": {
+    "a7a78edd26824007a76c6fe218f4d5fd": {
+      "screenId": "a7a78edd26824007a76c6fe218f4d5fd",
+      "materialSymbolsRequired": true,
+      "sections": [
+        {
+          "tag": "main",
+          "layout": "flex-row",
+          "classes": [
+            "relative",
+            "w-full",
+            "h-full",
+            "flex",
+            "items-center",
+            "justify-center",
+            "bg-surface"
+          ],
+          "childCount": 18
+        }
+      ],
+      "buttons": [
+        {
+          "kind": "button",
+          "label": "Settings",
+          "classes": [
+            "w-12",
+            "h-12",
+            "rounded-full",
+            "border-2",
+            "border-outline-variant",
+            "bg-surface-container/80",
+            "backdrop-blur-md",
+            "flex",
+            "items-center",
+            "justify-center",
+            "text-on-surface-variant",
+            "hover:text-primary-fixed-dim",
+            "hover:border-primary-fixed-dim",
+            "hover:scale-110",
+            "hover:shadow-[0_0_15px_rgba(0,219,233,0.4)]",
+            "transition-all",
+            "duration-200"
+          ],
+          "icon": "settings",
+          "action": "navigate",
+          "expectedBehavior": "navigate:/settings",
+          "expectedRoute": "/settings",
+          "routeInferred": true
+        },
+        {
+          "kind": "button",
+          "label": "Resume Flight",
+          "classes": [
+            "w-full",
+            "group",
+            "relative",
+            "bg-primary-container",
+            "text-on-primary-container",
+            "font-label-mono",
+            "text-label-mono",
+            "uppercase",
+            "tracking-widest",
+            "px-8",
+            "py-5",
+            "rounded",
+            "transition-all",
+            "duration-150",
+            "border-b-[6px]",
+            "border-inverse-primary",
+            "hover:brightness-110",
+            "active:border-b-0",
+            "active:translate-y-[6px]",
+            "flex",
+            "justify-center",
+            "items-center",
+            "gap-3"
+          ],
+          "icon": "play_arrow",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "button",
+          "label": "Restart Loop",
+          "classes": [
+            "w-full",
+            "bg-surface-bright",
+            "text-on-surface",
+            "font-label-mono",
+            "text-label-mono",
+            "uppercase",
+            "tracking-widest",
+            "px-8",
+            "py-4",
+            "rounded",
+            "transition-all",
+            "duration-150",
+            "border-b-[4px]",
+            "border-surface-container-lowest",
+            "hover:bg-surface-variant",
+            "hover:text-tertiary-fixed-dim",
+            "active:border-b-0",
+            "active:translate-y-[4px]",
+            "flex",
+            "justify-center",
+            "items-center",
+            "gap-3"
+          ],
+          "icon": "replay",
+          "action": "reset",
+          "expectedBehavior": "reset visible value/state, with confirmation if destructive"
+        },
+        {
+          "kind": "button",
+          "label": "Abandon Run",
+          "classes": [
+            "mt-4",
+            "text-on-surface-variant",
+            "hover:text-error",
+            "font-label-mono",
+            "text-label-mono",
+            "text-sm",
+            "underline",
+            "underline-offset-4",
+            "transition-colors",
+            "duration-200"
+          ],
+          "icon": null,
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        }
+      ],
+      "inputs": [],
+      "navLinks": [],
+      "cards": [],
+      "icons": [
+        "rocket_launch",
+        "settings",
+        "play_arrow",
+        "replay"
+      ],
+      "images": [],
+      "cssVars": {},
+      "colorPalette": {
+        "on-error": "#690005",
+        "on-primary-container": "#006970",
+        "tertiary-fixed-dim": "#ffb59c",
+        "secondary-fixed": "#79ff5b",
+        "primary-container": "#00f0ff",
+        "on-primary-fixed": "#002022",
+        "on-secondary-container": "#0f6d00",
+        "on-tertiary-fixed": "#390c00",
+        "surface-container-highest": "#2d3449",
+        "surface-container-high": "#222a3d",
+        "on-tertiary-fixed-variant": "#832700",
+        "on-error-container": "#ffdad6",
+        "surface-container-low": "#131b2e",
+        "on-primary": "#00363a",
+        "outline": "#849495",
+        "on-secondary-fixed": "#022100",
+        "on-tertiary": "#5c1900",
+        "surface-dim": "#0b1326",
+        "surface-tint": "#00dbe9",
+        "on-secondary-fixed-variant": "#095300",
+        "secondary-fixed-dim": "#2ae500",
+        "surface-container": "#171f33",
+        "primary-fixed": "#7df4ff",
+        "on-surface": "#dae2fd",
+        "error": "#ffb4ab",
+        "tertiary-container": "#ffcfc0",
+        "surface": "#0b1326",
+        "secondary-container": "#2ff801",
+        "background": "#0b1326",
+        "secondary": "#d7ffc5",
+        "on-tertiary-container": "#ac3600",
+        "tertiary-fixed": "#ffdbcf",
+        "outline-variant": "#3b494b",
+        "on-secondary": "#053900",
+        "primary-fixed-dim": "#00dbe9",
+        "error-container": "#93000a",
+        "inverse-primary": "#006970",
+        "surface-bright": "#31394d",
+        "on-background": "#dae2fd",
+        "surface-container-lowest": "#060e20",
+        "inverse-on-surface": "#283044",
+        "on-primary-fixed-variant": "#004f54",
+        "surface-variant": "#2d3449",
+        "primary": "#dbfcff",
+        "tertiary": "#fff4f0",
+        "on-surface-variant": "#b9cacb",
+        "inverse-surface": "#dae2fd"
+      },
+      "fonts": [
+        "Material Symbols Outlined",
+        "Anybody",
+        "Montserrat",
+        "Space Mono"
+      ],
+      "layoutHints": {
+        "flexDirection": "col",
+        "gap": "4"
+      },
+      "behaviorContract": [
+        {
+          "kind": "button",
+          "label": "Settings",
+          "icon": "settings",
+          "action": "navigate",
+          "route": "/settings",
+          "expectedBehavior": "navigate:/settings"
+        },
+        {
+          "kind": "button",
+          "label": "Resume Flight",
+          "icon": "play_arrow",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "button",
+          "label": "Restart Loop",
+          "icon": "replay",
+          "action": "reset",
+          "expectedBehavior": "reset visible value/state, with confirmation if destructive"
+        },
+        {
+          "kind": "button",
+          "label": "Abandon Run",
+          "icon": null,
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        }
+      ],
+      "tabBar": [],
+      "title": "Gameplay - WingLoop Lite"
+    },
+    "bebc9f7f30cd4b5aa6f97e5ba253bac4": {
+      "screenId": "bebc9f7f30cd4b5aa6f97e5ba253bac4",
+      "materialSymbolsRequired": true,
+      "sections": [
+        {
+          "tag": "nav",
+          "layout": "flex-row",
+          "classes": [
+            "hidden",
+            "md:flex",
+            "fixed",
+            "top-0",
+            "w-full",
+            "bg-transparent",
+            "flex",
+            "justify-between",
+            "items-center",
+            "px-6"
+          ],
+          "childCount": 1
+        },
+        {
+          "tag": "nav",
+          "layout": "absolute",
+          "classes": [
+            "hidden",
+            "fixed",
+            "left-0",
+            "top-0",
+            "h-full",
+            "w-64",
+            "border-r-2",
+            "border-primary-fixed-dim/30",
+            "bg-surface-container-highest/60",
+            "backdrop-blur-md"
+          ],
+          "childCount": 0
+        },
+        {
+          "tag": "main",
+          "layout": "relative",
+          "classes": [
+            "relative",
+            "z-20",
+            "w-full",
+            "max-w-[480px]",
+            "px-container-margin",
+            "py-8"
+          ],
+          "childCount": 22
+        }
+      ],
+      "buttons": [
+        {
+          "kind": "button",
+          "label": "Close settings",
+          "classes": [
+            "text-on-surface-variant",
+            "hover:text-primary-fixed",
+            "transition-colors"
+          ],
+          "icon": "close",
+          "action": "dismiss",
+          "expectedBehavior": "close dialog/panel or return to previous state"
+        },
+        {
+          "kind": "button",
+          "label": "MUSIC ON",
+          "classes": [
+            "flex-1",
+            "bg-surface-container",
+            "border",
+            "border-primary-fixed-dim/50",
+            "py-3",
+            "rounded-lg",
+            "flex",
+            "items-center",
+            "justify-center",
+            "gap-2",
+            "text-primary-fixed",
+            "hover:bg-primary-fixed-dim/10",
+            "transition-colors"
+          ],
+          "icon": "music_note",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "button",
+          "label": "SFX ON",
+          "classes": [
+            "flex-1",
+            "bg-surface-container",
+            "border",
+            "border-primary-fixed-dim/50",
+            "py-3",
+            "rounded-lg",
+            "flex",
+            "items-center",
+            "justify-center",
+            "gap-2",
+            "text-primary-fixed",
+            "hover:bg-primary-fixed-dim/10",
+            "transition-colors"
+          ],
+          "icon": "campaign",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "button",
+          "label": "PREFERENCES",
+          "classes": [
+            "w-full",
+            "bg-primary-fixed",
+            "text-on-primary-fixed",
+            "font-title-md",
+            "text-title-md",
+            "py-4",
+            "rounded-lg",
+            "uppercase",
+            "tracking-widest",
+            "border-b-4",
+            "border-[#00a8b3]",
+            "neon-glow-primary",
+            "neon-glow-primary-hover",
+            "active:translate-y-1",
+            "active:border-b-0",
+            "transition-all",
+            "flex",
+            "items-center",
+            "justify-center",
+            "gap-2"
+          ],
+          "icon": "save",
+          "action": "form-submit",
+          "expectedBehavior": "validate inputs and submit/apply changes"
+        },
+        {
+          "kind": "button",
+          "label": "RESET DEFAULTS",
+          "classes": [
+            "text-on-surface-variant",
+            "hover:text-error",
+            "transition-colors",
+            "font-label-mono",
+            "text-label-mono",
+            "flex",
+            "items-center",
+            "gap-1",
+            "text-[12px]",
+            "opacity-70",
+            "hover:opacity-100"
+          ],
+          "icon": "restart_alt",
+          "action": "reset",
+          "expectedBehavior": "reset visible value/state, with confirmation if destructive"
+        },
+        {
+          "kind": "button",
+          "label": "RESUME GAME",
+          "classes": [
+            "text-on-surface-variant",
+            "hover:text-primary-fixed",
+            "transition-colors",
+            "font-label-mono",
+            "text-label-mono",
+            "flex",
+            "items-center",
+            "gap-1"
+          ],
+          "icon": "arrow_forward",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        }
+      ],
+      "inputs": [
+        {
+          "kind": "input",
+          "type": "range",
+          "label": "speed-slider",
+          "placeholder": "",
+          "name": "speed-slider",
+          "classes": [
+            "w-full"
+          ],
+          "expectedBehavior": "controlled value with onChange; validation if required by PRD"
+        }
+      ],
+      "navLinks": [],
+      "cards": [],
+      "icons": [
+        "pause",
+        "close",
+        "speed",
+        "sports_esports",
+        "space_bar",
+        "mouse",
+        "touch_app",
+        "volume_up",
+        "music_note",
+        "campaign",
+        "save",
+        "restart_alt",
+        "arrow_forward"
+      ],
+      "images": [],
+      "cssVars": {},
+      "colorPalette": {
+        "on-error": "#690005",
+        "on-primary-container": "#006970",
+        "tertiary-fixed-dim": "#ffb59c",
+        "secondary-fixed": "#79ff5b",
+        "primary-container": "#00f0ff",
+        "on-primary-fixed": "#002022",
+        "on-secondary-container": "#0f6d00",
+        "on-tertiary-fixed": "#390c00",
+        "surface-container-highest": "#2d3449",
+        "surface-container-high": "#222a3d",
+        "on-tertiary-fixed-variant": "#832700",
+        "on-error-container": "#ffdad6",
+        "surface-container-low": "#131b2e",
+        "on-primary": "#00363a",
+        "outline": "#849495",
+        "on-secondary-fixed": "#022100",
+        "on-tertiary": "#5c1900",
+        "surface-dim": "#0b1326",
+        "surface-tint": "#00dbe9",
+        "on-secondary-fixed-variant": "#095300",
+        "secondary-fixed-dim": "#2ae500",
+        "surface-container": "#171f33",
+        "primary-fixed": "#7df4ff",
+        "on-surface": "#dae2fd",
+        "error": "#ffb4ab",
+        "tertiary-container": "#ffcfc0",
+        "surface": "#0b1326",
+        "secondary-container": "#2ff801",
+        "background": "#0b1326",
+        "secondary": "#d7ffc5",
+        "on-tertiary-container": "#ac3600",
+        "tertiary-fixed": "#ffdbcf",
+        "outline-variant": "#3b494b",
+        "on-secondary": "#053900",
+        "primary-fixed-dim": "#00dbe9",
+        "error-container": "#93000a",
+        "inverse-primary": "#006970",
+        "surface-bright": "#31394d",
+        "on-background": "#dae2fd",
+        "surface-container-lowest": "#060e20",
+        "inverse-on-surface": "#283044",
+        "on-primary-fixed-variant": "#004f54",
+        "surface-variant": "#2d3449",
+        "primary": "#dbfcff",
+        "tertiary": "#fff4f0",
+        "on-surface-variant": "#b9cacb",
+        "inverse-surface": "#dae2fd"
+      },
+      "fonts": [
+        "Anybody",
+        "Montserrat",
+        "Space Mono",
+        "Material Symbols Outlined"
+      ],
+      "layoutHints": {
+        "gridCols": 3,
+        "flexDirection": "col",
+        "gap": "4"
+      },
+      "behaviorContract": [
+        {
+          "kind": "button",
+          "label": "Close settings",
+          "icon": "close",
+          "action": "dismiss",
+          "expectedBehavior": "close dialog/panel or return to previous state"
+        },
+        {
+          "kind": "button",
+          "label": "MUSIC ON",
+          "icon": "music_note",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "button",
+          "label": "SFX ON",
+          "icon": "campaign",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "button",
+          "label": "PREFERENCES",
+          "icon": "save",
+          "action": "form-submit",
+          "expectedBehavior": "validate inputs and submit/apply changes"
+        },
+        {
+          "kind": "button",
+          "label": "RESET DEFAULTS",
+          "icon": "restart_alt",
+          "action": "reset",
+          "expectedBehavior": "reset visible value/state, with confirmation if destructive"
+        },
+        {
+          "kind": "button",
+          "label": "RESUME GAME",
+          "icon": "arrow_forward",
+          "action": "click-action",
+          "expectedBehavior": "produce visible DOM/state/URL feedback; never empty onClick"
+        },
+        {
+          "kind": "input",
+          "label": "speed-slider",
+          "type": "range",
+          "placeholder": "",
+          "expectedBehavior": "controlled value with onChange; validation if required by PRD"
+        }
+      ],
+      "tabBar": [],
+      "title": "Game Settings - WingLoop Lite"
+    }
+  }
+}

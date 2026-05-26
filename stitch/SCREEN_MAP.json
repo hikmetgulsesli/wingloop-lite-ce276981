@@ -1,0 +1,20 @@
+[
+  {
+    "screenId": "a7a78edd26824007a76c6fe218f4d5fd",
+    "name": "Gameplay - WingLoop Lite",
+    "type": "game",
+    "description": "Gameplay - WingLoop Lite screen",
+    "surfaceIds": [
+      "SURF_GAMEPLAY"
+    ]
+  },
+  {
+    "screenId": "bebc9f7f30cd4b5aa6f97e5ba253bac4",
+    "name": "Game Settings - WingLoop Lite",
+    "type": "settings",
+    "description": "Game Settings - WingLoop Lite screen",
+    "surfaceIds": [
+      "SURF_GAME_SETTINGS"
+    ]
+  }
+]

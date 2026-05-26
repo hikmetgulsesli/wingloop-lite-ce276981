@@ -1,0 +1,24 @@
+[
+  {
+    "screenId": "a7a78edd26824007a76c6fe218f4d5fd",
+    "title": "Gameplay - WingLoop Lite",
+    "htmlFile": "a7a78edd26824007a76c6fe218f4d5fd.html",
+    "deviceType": "DESKTOP",
+    "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sX2Y0ZjBmYjBkZWIxZDRiZjdiNjUzNWRiM2M0MDhkNjI5EgsSBxCN19Wi9xcYAZIBIwoKcHJvamVjdF9pZBIVQhMzNjk1MjU3NzkzMjI1NTU3Nzk1&filename=&opi=96797242",
+    "localHtml": "/Users/setrox/projects/wingloop-lite-ce276981/stitch/a7a78edd26824007a76c6fe218f4d5fd.html",
+    "surfaceIds": [
+      "SURF_GAMEPLAY"
+    ]
+  },
+  {
+    "screenId": "bebc9f7f30cd4b5aa6f97e5ba253bac4",
+    "title": "Game Settings - WingLoop Lite",
+    "htmlFile": "bebc9f7f30cd4b5aa6f97e5ba253bac4.html",
+    "deviceType": "DESKTOP",
+    "htmlUrl": "https://contribution.usercontent.google.com/download?c=CgthaWRhX2NvZGVmeBJ7Eh1hcHBfY29tcGFuaW9uX2dlbmVyYXRlZF9maWxlcxpaCiVodG1sXzk0Y2Y2MmU2MTkyNzRmYWJiN2FmODY4OThlZmIxZjRhEgsSBxCN19Wi9xcYAZIBIwoKcHJvamVjdF9pZBIVQhMzNjk1MjU3NzkzMjI1NTU3Nzk1&filename=&opi=96797242",
+    "localHtml": "/Users/setrox/projects/wingloop-lite-ce276981/stitch/bebc9f7f30cd4b5aa6f97e5ba253bac4.html",
+    "surfaceIds": [
+      "SURF_GAME_SETTINGS"
+    ]
+  }
+]

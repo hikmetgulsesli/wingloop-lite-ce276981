@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WingLoop Lite - Gameplay</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,100..900;1,100..900&amp;family=Montserrat:ital,wght@0,100..900;1,100..900&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error": "#690005",
+                        "on-primary-container": "#006970",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "secondary-fixed": "#79ff5b",
+                        "primary-container": "#00f0ff",
+                        "on-primary-fixed": "#002022",
+                        "on-secondary-container": "#0f6d00",
+                        "on-tertiary-fixed": "#390c00",
+                        "surface-container-highest": "#2d3449",
+                        "surface-container-high": "#222a3d",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#131b2e",
+                        "on-primary": "#00363a",
+                        "outline": "#849495",
+                        "on-secondary-fixed": "#022100",
+                        "on-tertiary": "#5c1900",
+                        "surface-dim": "#0b1326",
+                        "surface-tint": "#00dbe9",
+                        "on-secondary-fixed-variant": "#095300",
+                        "secondary-fixed-dim": "#2ae500",
+                        "surface-container": "#171f33",
+                        "primary-fixed": "#7df4ff",
+                        "on-surface": "#dae2fd",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#ffcfc0",
+                        "surface": "#0b1326",
+                        "secondary-container": "#2ff801",
+                        "background": "#0b1326",
+                        "secondary": "#d7ffc5",
+                        "on-tertiary-container": "#ac3600",
+                        "tertiary-fixed": "#ffdbcf",
+                        "outline-variant": "#3b494b",
+                        "on-secondary": "#053900",
+                        "primary-fixed-dim": "#00dbe9",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#006970",
+                        "surface-bright": "#31394d",
+                        "on-background": "#dae2fd",
+                        "surface-container-lowest": "#060e20",
+                        "inverse-on-surface": "#283044",
+                        "on-primary-fixed-variant": "#004f54",
+                        "surface-variant": "#2d3449",
+                        "primary": "#dbfcff",
+                        "tertiary": "#fff4f0",
+                        "on-surface-variant": "#b9cacb",
+                        "inverse-surface": "#dae2fd"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "16px",
+                        "unit": "8px",
+                        "container-margin": "24px",
+                        "safe-area-bottom": "40px"
+                    },
+                    fontFamily: {
+                        "title-md": ["Montserrat"],
+                        "headline-lg": ["Anybody"],
+                        "headline-lg-mobile": ["Anybody"],
+                        "display-score": ["Anybody"],
+                        "body-md": ["Montserrat"],
+                        "label-mono": ["Space Mono"]
+                    },
+                    fontSize: {
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
+                        "headline-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "800" }],
+                        "display-score": ["72px", { "lineHeight": "80px", "letterSpacing": "-0.04em", "fontWeight": "900" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Custom styles for grid background to simulate arcade motion */
+        .arcade-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(132, 148, 149, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(132, 148, 149, 0.05) 1px, transparent 1px);
+        }
+        
+        .scanline {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-screen w-screen overflow-hidden selection:bg-primary-container selection:text-on-primary-container font-body-md antialiased touch-none">
+<!-- Game Canvas Wrapper -->
+<main class="relative w-full h-full flex items-center justify-center bg-surface">
+<!-- Background Decor: Grid & Scanlines -->
+<div class="absolute inset-0 arcade-grid pointer-events-none z-0"></div>
+<div class="absolute inset-0 scanline pointer-events-none z-50 mix-blend-overlay opacity-30"></div>
+<!-- PLAYFIELD AREA (Behind overlays) -->
+<div class="absolute inset-0 z-10 overflow-hidden blur-[2px] transition-all duration-300">
+<!-- Mock Player Entity (Bird) -->
+<div class="absolute left-1/4 top-1/2 -translate-y-1/2 w-12 h-12 bg-primary-fixed-dim rounded-full shadow-[0_0_25px_rgba(0,219,233,0.8)] border-2 border-primary-container flex items-center justify-center text-primary-container animate-pulse">
+<span class="material-symbols-outlined" data-icon="rocket_launch" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<!-- Mock Obstacles (Pipes) - Right side moving left -->
+<div class="absolute right-[20%] top-[-10%] w-20 h-[45%] bg-surface-container border-2 border-secondary-fixed shadow-[0_0_15px_rgba(121,255,91,0.3)]">
+<!-- Inner texture/detail -->
+<div class="absolute bottom-0 w-full h-6 border-t-2 border-secondary-fixed bg-secondary-fixed/20"></div>
+</div>
+<div class="absolute right-[20%] bottom-[-10%] w-20 h-[35%] bg-surface-container border-2 border-secondary-fixed shadow-[0_0_15px_rgba(121,255,91,0.3)]">
+<!-- Inner texture/detail -->
+<div class="absolute top-0 w-full h-6 border-b-2 border-secondary-fixed bg-secondary-fixed/20"></div>
+</div>
+</div>
+<!-- HUD (Heads Up Display) - Anchored to Safe Areas -->
+<div class="absolute top-0 left-0 w-full p-container-margin md:p-8 flex justify-between items-start z-40 pointer-events-none">
+<!-- Top Left: Secondary Stats (Score Chip) -->
+<div class="bg-surface-container-highest/60 backdrop-blur-sm border border-primary-fixed-dim px-4 py-2 rounded shadow-[0_4px_12px_rgba(0,0,0,0.5)] flex flex-col items-center pointer-events-auto">
+<span class="font-label-mono text-label-mono text-primary-fixed-dim uppercase tracking-wider">Best</span>
+<span class="font-title-md text-title-md text-on-surface">1,402</span>
+</div>
+<!-- Top Center: Primary Score -->
+<div class="flex-1 flex justify-center -mt-2">
+<span class="font-display-score text-display-score text-primary-container drop-shadow-[0_0_20px_rgba(0,240,255,0.6)] tabular-nums tracking-tighter">
+                    847
+                </span>
+</div>
+<!-- Top Right: Controls (TopAppBar inspired logic) -->
+<div class="flex gap-4 pointer-events-auto">
+<button aria-label="Settings" class="w-12 h-12 rounded-full border-2 border-outline-variant bg-surface-container/80 backdrop-blur-md flex items-center justify-center text-on-surface-variant hover:text-primary-fixed-dim hover:border-primary-fixed-dim hover:scale-110 hover:shadow-[0_0_15px_rgba(0,219,233,0.4)] transition-all duration-200">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</div>
+<!-- OVERLAY: Paused State Modal -->
+<!-- Logic: Uses semi-transparent backdrop blur, centers content, heavy tactile buttons -->
+<div class="absolute inset-0 z-50 bg-surface-container-highest/60 backdrop-blur-md flex items-center justify-center p-container-margin">
+<div class="w-full max-w-[480px] bg-surface-container border-2 border-outline-variant rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] p-8 md:p-12 flex flex-col items-center gap-10 relative overflow-hidden">
+<!-- Modal Decorative Glow -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-primary-fixed-dim shadow-[0_0_30px_rgba(0,219,233,1)]"></div>
+<!-- Header -->
+<div class="text-center">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface tracking-widest uppercase mb-2">Paused</h2>
+<p class="font-label-mono text-label-mono text-on-surface-variant">Take a breath. The loop waits.</p>
+</div>
+<!-- Action Buttons Cluster -->
+<div class="w-full flex flex-col gap-4">
+<!-- Primary Button: Resume -->
+<button class="w-full group relative bg-primary-container text-on-primary-container font-label-mono text-label-mono uppercase tracking-widest px-8 py-5 rounded transition-all duration-150 border-b-[6px] border-inverse-primary hover:brightness-110 active:border-b-0 active:translate-y-[6px] flex justify-center items-center gap-3">
+<span class="material-symbols-outlined" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<span>Resume Flight</span>
+<!-- Hover Glow Effect -->
+<div class="absolute inset-0 rounded opacity-0 group-hover:opacity-100 shadow-[0_0_20px_rgba(0,240,255,0.5)] transition-opacity duration-300 pointer-events-none"></div>
+</button>
+<!-- Secondary Button: Restart -->
+<button class="w-full bg-surface-bright text-on-surface font-label-mono text-label-mono uppercase tracking-widest px-8 py-4 rounded transition-all duration-150 border-b-[4px] border-surface-container-lowest hover:bg-surface-variant hover:text-tertiary-fixed-dim active:border-b-0 active:translate-y-[4px] flex justify-center items-center gap-3">
+<span class="material-symbols-outlined" data-icon="replay">replay</span>
+<span>Restart Loop</span>
+</button>
+<!-- Tertiary Action: Quit (Subtle) -->
+<button class="mt-4 text-on-surface-variant hover:text-error font-label-mono text-label-mono text-sm underline underline-offset-4 transition-colors duration-200">
+                        Abandon Run
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>
