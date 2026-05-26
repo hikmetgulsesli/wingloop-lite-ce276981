@@ -30,6 +30,7 @@ const initialSnapshot = (bestScore = 0): WingLoopSnapshot => ({
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastTimeRef = useRef(0);
+  const canUseBrowserHistory = typeof window !== "undefined";
   const [settingsOpen, setSettingsOpen] = useState(() =>
     typeof window === "undefined" ? false : window.location.pathname === "/settings",
   );
@@ -52,17 +53,17 @@ export default function App() {
 
   const showSettings = useCallback(() => {
     setSettingsOpen(true);
-    if (window.location.pathname !== "/settings") {
+    if (canUseBrowserHistory && window.location.pathname !== "/settings") {
       window.history.pushState({}, "", "/settings");
     }
-  }, []);
+  }, [canUseBrowserHistory]);
 
   const hideSettings = useCallback(() => {
     setSettingsOpen(false);
-    if (window.location.pathname === "/settings") {
+    if (canUseBrowserHistory && window.location.pathname === "/settings") {
       window.history.pushState({}, "", "/");
     }
-  }, []);
+  }, [canUseBrowserHistory]);
 
   const draw = useCallback((ctx: CanvasRenderingContext2D, frame: WingLoopSnapshot) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, WINGLOOP_WORLD.height);
