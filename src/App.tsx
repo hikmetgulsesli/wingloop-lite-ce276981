@@ -105,7 +105,19 @@ export default function App() {
     return () => cancelAnimationFrame(frameId);
   }, [draw, store]);
 
-  const flap = useCallback(() => store.actions.flap(), [store]);
+  const canUseGameplayInput = snapshot.phase === "playing";
+  const flap = useCallback(() => {
+    if (canUseGameplayInput) {
+      store.actions.flap();
+    }
+  }, [canUseGameplayInput, store]);
+  const primaryAction = useCallback(() => {
+    if (snapshot.phase === "ready") {
+      store.actions.start();
+      return;
+    }
+    flap();
+  }, [flap, snapshot.phase, store]);
   const pauseOrResume = useCallback(() => {
     snapshot.phase === "paused" ? store.actions.resume() : store.actions.pause();
   }, [snapshot.phase, store]);
@@ -158,12 +170,15 @@ export default function App() {
         width={WINGLOOP_WORLD.width}
         height={WINGLOOP_WORLD.height}
         aria-label="WingLoop Lite canvas game"
+        aria-disabled={!canUseGameplayInput}
         onPointerDown={flap}
       />
 
       <section className="controls" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(132px, 1fr))" }} aria-label="Game controls">
         <button onClick={() => setSettingsOpen(true)}>Settings</button>
-        <button onClick={flap}>{snapshot.phase === "ready" ? "Start" : "Flap"}</button>
+        <button onClick={primaryAction} disabled={snapshot.phase !== "ready" && !canUseGameplayInput}>
+          {snapshot.phase === "ready" ? "Start" : "Flap"}
+        </button>
         <button onClick={pauseOrResume} disabled={snapshot.phase === "ready" || snapshot.phase === "gameover" || snapshot.phase === "abandoned"}>
           {snapshot.phase === "paused" ? "Resume Flight" : "Pause"}
         </button>

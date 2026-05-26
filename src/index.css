@@ -2,6 +2,10 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.game[aria-disabled="true"] {
+  cursor: default;
+}
+
 .settings-panel {
   position: fixed;
   inset: 0;
