@@ -1,256 +1,126 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createLocalWingLoopRepo } from "./features/wingloop-lite/wingloop-lite.repo";
+import { createWingLoopStore } from "./features/wingloop-lite/wingloop-lite.store";
+import { WINGLOOP_WORLD, type WingLoopSnapshot } from "./game/game-runtime";
+import { installWingLoopTestBridge } from "./test/bridge";
+import "./index.css";
 
-type Phase = "ready" | "playing" | "paused" | "gameover";
-
-type Pipe = {
-  x: number;
-  gapY: number;
-  scored: boolean;
-};
-
-type GameSnapshot = {
-  phase: Phase;
-  score: number;
-  bestScore: number;
-  difficulty: number;
-  birdY: number;
-  velocity: number;
-  pipeCount: number;
-};
-
-declare global {
-  interface Window {
-    app: GameSnapshot & {
-      flap: () => void;
-      start: () => void;
-      pause: () => void;
-      resume: () => void;
-      restart: () => void;
-    };
-  }
-}
-
-const WIDTH = 960;
-const HEIGHT = 540;
-const BIRD_X = 220;
-const BIRD_RADIUS = 18;
-const GRAVITY = 1500;
-const FLAP = -470;
-const PIPE_WIDTH = 86;
-const PIPE_INTERVAL = 1.55;
-const START_BEST = Number(localStorage.getItem("wingloop-best") ?? 0);
-
-const makePipe = (x: number, difficulty: number): Pipe => {
-  const gap = Math.max(138, 190 - difficulty * 7);
-  const margin = gap / 2 + 54;
-  return {
-    x,
-    gapY: margin + Math.random() * (HEIGHT - margin * 2),
-    scored: false,
-  };
-};
+const initialSnapshot = (bestScore = 0): WingLoopSnapshot => ({
+  phase: "ready",
+  score: 0,
+  bestScore,
+  difficulty: 0,
+  birdY: Math.round(WINGLOOP_WORLD.height * 0.45),
+  velocity: 0,
+  pipes: [],
+  pipeCount: 0,
+  settings: {
+    music: true,
+    sfx: true,
+    sensitivity: 0.72,
+    assistMode: false,
+  },
+  lastEvent: "idle",
+});
 
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const phaseRef = useRef<Phase>("ready");
-  const birdYRef = useRef(HEIGHT * 0.45);
-  const velocityRef = useRef(0);
-  const pipesRef = useRef<Pipe[]>([makePipe(WIDTH + 90, 0)]);
-  const spawnRef = useRef(0);
-  const scoreRef = useRef(0);
-  const bestRef = useRef(START_BEST);
-  const difficultyRef = useRef(0);
   const lastTimeRef = useRef(0);
-  const [snapshot, setSnapshot] = useState<GameSnapshot>({
-    phase: "ready",
-    score: 0,
-    bestScore: START_BEST,
-    difficulty: 0,
-    birdY: birdYRef.current,
-    velocity: 0,
-    pipeCount: 1,
-  });
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const store = useMemo(
+    () => createWingLoopStore({ repo: createLocalWingLoopRepo(typeof window === "undefined" ? undefined : window.localStorage) }),
+    [],
+  );
+  const [snapshot, setSnapshot] = useState(() => initialSnapshot(store.getSnapshot().bestScore));
 
-  const publish = useCallback(() => {
-    const next: GameSnapshot = {
-      phase: phaseRef.current,
-      score: scoreRef.current,
-      bestScore: bestRef.current,
-      difficulty: difficultyRef.current,
-      birdY: Math.round(birdYRef.current),
-      velocity: Math.round(velocityRef.current),
-      pipeCount: pipesRef.current.length,
-    };
+  useEffect(() => store.subscribe(setSnapshot), [store]);
 
-    window.app = {
-      ...next,
-      flap,
-      start,
-      pause,
-      resume,
-      restart,
-    };
-    setSnapshot(next);
-  }, []);
+  useEffect(() => installWingLoopTestBridge(store), [store]);
 
-  const resetRun = useCallback(() => {
-    birdYRef.current = HEIGHT * 0.45;
-    velocityRef.current = 0;
-    scoreRef.current = 0;
-    difficultyRef.current = 0;
-    spawnRef.current = 0;
-    pipesRef.current = [makePipe(WIDTH + 90, 0)];
-  }, []);
-
-  const start = useCallback(() => {
-    resetRun();
-    phaseRef.current = "playing";
-    publish();
-  }, [publish, resetRun]);
-
-  const restart = useCallback(() => {
-    resetRun();
-    phaseRef.current = "playing";
-    publish();
-  }, [publish, resetRun]);
-
-  const pause = useCallback(() => {
-    if (phaseRef.current === "playing") {
-      phaseRef.current = "paused";
-      publish();
-    }
-  }, [publish]);
-
-  const resume = useCallback(() => {
-    if (phaseRef.current === "paused") {
-      phaseRef.current = "playing";
-      publish();
-    }
-  }, [publish]);
-
-  const flap = useCallback(() => {
-    if (phaseRef.current === "ready" || phaseRef.current === "gameover") {
-      start();
-    }
-    if (phaseRef.current === "paused") {
-      resume();
-    }
-    velocityRef.current = FLAP;
-    publish();
-  }, [publish, resume, start]);
-
-  const endRun = useCallback(() => {
-    phaseRef.current = "gameover";
-    bestRef.current = Math.max(bestRef.current, scoreRef.current);
-    localStorage.setItem("wingloop-best", String(bestRef.current));
-    publish();
-  }, [publish]);
-
-  const draw = useCallback((ctx: CanvasRenderingContext2D) => {
-    const gradient = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+  const draw = useCallback((ctx: CanvasRenderingContext2D, frame: WingLoopSnapshot) => {
+    const gradient = ctx.createLinearGradient(0, 0, 0, WINGLOOP_WORLD.height);
     gradient.addColorStop(0, "#101a35");
     gradient.addColorStop(0.58, "#0b1326");
     gradient.addColorStop(1, "#050a18");
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    ctx.fillRect(0, 0, WINGLOOP_WORLD.width, WINGLOOP_WORLD.height);
 
     ctx.strokeStyle = "rgba(125, 244, 255, 0.12)";
     ctx.lineWidth = 1;
-    for (let x = 0; x < WIDTH; x += 48) {
+    for (let x = 0; x < WINGLOOP_WORLD.width; x += 48) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x - 140, HEIGHT);
+      ctx.lineTo(x - 140, WINGLOOP_WORLD.height);
       ctx.stroke();
     }
 
-    const gap = Math.max(138, 190 - difficultyRef.current * 7);
-    pipesRef.current.forEach((pipe) => {
+    const gap = Math.max(frame.settings.assistMode ? 162 : 138, (frame.settings.assistMode ? 214 : 190) - frame.difficulty * 7);
+    frame.pipes.forEach((pipe) => {
       const topBottom = pipe.gapY - gap / 2;
       const bottomTop = pipe.gapY + gap / 2;
-      const pipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + PIPE_WIDTH, 0);
+      const pipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + WINGLOOP_WORLD.pipeWidth, 0);
       pipeGradient.addColorStop(0, "#2ff801");
       pipeGradient.addColorStop(0.48, "#79ff5b");
       pipeGradient.addColorStop(1, "#0f6d00");
       ctx.fillStyle = pipeGradient;
-      ctx.fillRect(pipe.x, 0, PIPE_WIDTH, topBottom);
-      ctx.fillRect(pipe.x, bottomTop, PIPE_WIDTH, HEIGHT - bottomTop);
+      ctx.fillRect(pipe.x, 0, WINGLOOP_WORLD.pipeWidth, topBottom);
+      ctx.fillRect(pipe.x, bottomTop, WINGLOOP_WORLD.pipeWidth, WINGLOOP_WORLD.height - bottomTop);
       ctx.fillStyle = "rgba(219, 252, 255, 0.24)";
       ctx.fillRect(pipe.x + 10, 0, 8, topBottom);
-      ctx.fillRect(pipe.x + 10, bottomTop, 8, HEIGHT - bottomTop);
+      ctx.fillRect(pipe.x + 10, bottomTop, 8, WINGLOOP_WORLD.height - bottomTop);
     });
 
     ctx.fillStyle = "#00f0ff";
     ctx.beginPath();
-    ctx.arc(BIRD_X, birdYRef.current, BIRD_RADIUS, 0, Math.PI * 2);
+    ctx.arc(WINGLOOP_WORLD.birdX, frame.birdY, WINGLOOP_WORLD.birdRadius, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#fff4f0";
     ctx.beginPath();
-    ctx.arc(BIRD_X + 7, birdYRef.current - 5, 5, 0, Math.PI * 2);
+    ctx.arc(WINGLOOP_WORLD.birdX + 7, frame.birdY - 5, 5, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = "#ffb59c";
     ctx.beginPath();
-    ctx.moveTo(BIRD_X + 17, birdYRef.current);
-    ctx.lineTo(BIRD_X + 35, birdYRef.current + 8);
-    ctx.lineTo(BIRD_X + 17, birdYRef.current + 14);
+    ctx.moveTo(WINGLOOP_WORLD.birdX + 17, frame.birdY);
+    ctx.lineTo(WINGLOOP_WORLD.birdX + 35, frame.birdY + 8);
+    ctx.lineTo(WINGLOOP_WORLD.birdX + 17, frame.birdY + 14);
     ctx.closePath();
     ctx.fill();
   }, []);
 
   useEffect(() => {
-    publish();
-  }, [publish]);
-
-  useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas?.getContext("2d");
     if (!ctx) return;
 
+    let frameId = 0;
     const tick = (time: number) => {
-      const dt = Math.min(0.032, (time - lastTimeRef.current) / 1000 || 0);
+      const dt = (time - lastTimeRef.current) / 1000 || 0;
       lastTimeRef.current = time;
-
-      if (phaseRef.current === "playing") {
-        difficultyRef.current = Math.min(12, scoreRef.current * 0.5);
-        const speed = 230 + difficultyRef.current * 13;
-        velocityRef.current += GRAVITY * dt;
-        birdYRef.current += velocityRef.current * dt;
-        spawnRef.current += dt;
-
-        if (spawnRef.current > PIPE_INTERVAL) {
-          spawnRef.current = 0;
-          pipesRef.current.push(makePipe(WIDTH + 80, difficultyRef.current));
-        }
-
-        pipesRef.current = pipesRef.current
-          .map((pipe) => ({ ...pipe, x: pipe.x - speed * dt }))
-          .filter((pipe) => pipe.x + PIPE_WIDTH > -10);
-
-        const gap = Math.max(138, 190 - difficultyRef.current * 7);
-        for (const pipe of pipesRef.current) {
-          if (!pipe.scored && pipe.x + PIPE_WIDTH < BIRD_X - BIRD_RADIUS) {
-            pipe.scored = true;
-            scoreRef.current += 1;
-          }
-
-          const overlapsX = BIRD_X + BIRD_RADIUS > pipe.x && BIRD_X - BIRD_RADIUS < pipe.x + PIPE_WIDTH;
-          const outsideGap = birdYRef.current - BIRD_RADIUS < pipe.gapY - gap / 2 || birdYRef.current + BIRD_RADIUS > pipe.gapY + gap / 2;
-          if (overlapsX && outsideGap) {
-            endRun();
-          }
-        }
-
-        if (birdYRef.current < BIRD_RADIUS || birdYRef.current > HEIGHT - BIRD_RADIUS) {
-          endRun();
-        }
-      }
-
-      draw(ctx);
-      requestAnimationFrame(tick);
+      const next = store.actions.tick(dt);
+      draw(ctx, next);
+      frameId = requestAnimationFrame(tick);
     };
 
-    requestAnimationFrame(tick);
-  }, [draw, endRun]);
+    frameId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frameId);
+  }, [draw, store]);
+
+  const canUseGameplayInput = snapshot.phase === "playing";
+  const flap = useCallback(() => {
+    if (canUseGameplayInput) {
+      store.actions.flap();
+    }
+  }, [canUseGameplayInput, store]);
+  const primaryAction = useCallback(() => {
+    if (snapshot.phase === "ready") {
+      store.actions.start();
+      return;
+    }
+    flap();
+  }, [flap, snapshot.phase, store]);
+  const pauseOrResume = useCallback(() => {
+    snapshot.phase === "paused" ? store.actions.resume() : store.actions.pause();
+  }, [snapshot.phase, store]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -259,13 +129,16 @@ export default function App() {
         flap();
       }
       if (event.code === "KeyP") {
-        phaseRef.current === "paused" ? resume() : pause();
+        pauseOrResume();
+      }
+      if (event.code === "Escape") {
+        setSettingsOpen((open) => !open);
       }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [flap, pause, resume]);
+  }, [flap, pauseOrResume]);
 
   const statusText = snapshot.phase === "ready"
     ? "Ready"
@@ -273,7 +146,9 @@ export default function App() {
       ? "Flying"
       : snapshot.phase === "paused"
         ? "Paused"
-        : "Game Over";
+        : snapshot.phase === "abandoned"
+          ? "Run Abandoned"
+          : "Game Over";
 
   return (
     <main className="shell">
@@ -292,19 +167,57 @@ export default function App() {
       <canvas
         ref={canvasRef}
         className="game"
-        width={WIDTH}
-        height={HEIGHT}
+        width={WINGLOOP_WORLD.width}
+        height={WINGLOOP_WORLD.height}
         aria-label="WingLoop Lite canvas game"
+        aria-disabled={!canUseGameplayInput}
         onPointerDown={flap}
       />
 
-      <section className="controls" aria-label="Game controls">
-        <button onClick={flap}>{snapshot.phase === "ready" ? "Start" : "Flap"}</button>
-        <button onClick={snapshot.phase === "paused" ? resume : pause} disabled={snapshot.phase === "ready" || snapshot.phase === "gameover"}>
-          {snapshot.phase === "paused" ? "Resume" : "Pause"}
+      <section className="controls" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(132px, 1fr))" }} aria-label="Game controls">
+        <button onClick={() => setSettingsOpen(true)}>Settings</button>
+        <button onClick={primaryAction} disabled={snapshot.phase !== "ready" && !canUseGameplayInput}>
+          {snapshot.phase === "ready" ? "Start" : "Flap"}
         </button>
-        <button onClick={restart}>Restart</button>
+        <button onClick={pauseOrResume} disabled={snapshot.phase === "ready" || snapshot.phase === "gameover" || snapshot.phase === "abandoned"}>
+          {snapshot.phase === "paused" ? "Resume Flight" : "Pause"}
+        </button>
+        <button onClick={store.actions.restart}>Restart Loop</button>
       </section>
+
+      {settingsOpen && (
+        <section className="settings-panel" aria-label="Game Settings - WingLoop Lite">
+          <div className="settings-card">
+            <button className="close-button" onClick={() => setSettingsOpen(false)} aria-label="Close settings">Close settings</button>
+            <h2>Game Settings</h2>
+            <label>
+              Sensitivity
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={snapshot.settings.sensitivity}
+                onChange={(event) => store.actions.updateSettings({ sensitivity: Number(event.target.value) })}
+              />
+            </label>
+            <div className="settings-actions">
+              <button onClick={() => store.actions.updateSettings({ music: !snapshot.settings.music })}>
+                MUSIC {snapshot.settings.music ? "ON" : "OFF"}
+              </button>
+              <button onClick={() => store.actions.updateSettings({ sfx: !snapshot.settings.sfx })}>
+                SFX {snapshot.settings.sfx ? "ON" : "OFF"}
+              </button>
+              <button onClick={() => store.actions.updateSettings({ assistMode: !snapshot.settings.assistMode })}>
+                PREFERENCES
+              </button>
+              <button onClick={store.actions.resetSettings}>RESET DEFAULTS</button>
+              <button onClick={() => { store.actions.resume(); setSettingsOpen(false); }}>RESUME GAME</button>
+              <button onClick={() => { store.actions.abandon(); setSettingsOpen(false); }}>Abandon Run</button>
+            </div>
+          </div>
+        </section>
+      )}
     </main>
   );
 }
