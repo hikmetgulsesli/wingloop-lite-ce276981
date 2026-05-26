@@ -30,7 +30,7 @@ const initialSnapshot = (bestScore = 0): WingLoopSnapshot => ({
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const lastTimeRef = useRef(0);
-  const canUseBrowserHistory = typeof window !== "undefined";
+  const canUseBrowser = typeof window !== "undefined";
   const [settingsOpen, setSettingsOpen] = useState(() =>
     typeof window === "undefined" ? false : window.location.pathname === "/settings",
   );
@@ -45,25 +45,27 @@ export default function App() {
   useEffect(() => installWingLoopTestBridge(store), [store]);
 
   useEffect(() => {
+    if (!canUseBrowser) return;
+
     const handlePopState = () => setSettingsOpen(window.location.pathname === "/settings");
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
+  }, [canUseBrowser]);
 
   const showSettings = useCallback(() => {
     setSettingsOpen(true);
-    if (canUseBrowserHistory && window.location.pathname !== "/settings") {
+    if (canUseBrowser && window.location.pathname !== "/settings") {
       window.history.pushState({}, "", "/settings");
     }
-  }, [canUseBrowserHistory]);
+  }, [canUseBrowser]);
 
   const hideSettings = useCallback(() => {
     setSettingsOpen(false);
-    if (canUseBrowserHistory && window.location.pathname === "/settings") {
+    if (canUseBrowser && window.location.pathname === "/settings") {
       window.history.pushState({}, "", "/");
     }
-  }, [canUseBrowserHistory]);
+  }, [canUseBrowser]);
 
   const draw = useCallback((ctx: CanvasRenderingContext2D, frame: WingLoopSnapshot) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, WINGLOOP_WORLD.height);
@@ -116,6 +118,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!canUseBrowser || typeof requestAnimationFrame === "undefined") return;
+
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
     if (!ctx) return;
@@ -131,7 +135,7 @@ export default function App() {
 
     frameId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frameId);
-  }, [draw, store]);
+  }, [canUseBrowser, draw, store]);
 
   const canUseGameplayInput = snapshot.phase === "playing";
   const flap = useCallback(() => {
@@ -149,6 +153,8 @@ export default function App() {
   const pauseOrResume = useCallback(() => actPauseGame(store), [store]);
 
   useEffect(() => {
+    if (!canUseBrowser) return;
+
     const handleKey = (event: KeyboardEvent) => {
       if (event.code === "Space") {
         event.preventDefault();
@@ -168,7 +174,7 @@ export default function App() {
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [flap, hideSettings, pauseOrResume, settingsOpen, showSettings]);
+  }, [canUseBrowser, flap, hideSettings, pauseOrResume, settingsOpen, showSettings]);
 
   return (
     <GameplayWingloopLite
